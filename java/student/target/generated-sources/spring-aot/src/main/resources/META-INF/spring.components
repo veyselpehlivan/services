@@ -1,0 +1,9 @@
+#
+#Fri Dec 24 13:24:30 UTC 2021
+com.kloia.student.model.Student=javax.persistence.Entity,javax.persistence.Table
+com.kloia.student.service.StudentService=org.springframework.stereotype.Component
+com.kloia.student.converter.StudentConverter=org.springframework.stereotype.Component
+com.kloia.student.repository.StudentRepository=org.springframework.stereotype.Component,org.springframework.data.repository.Repository
+com.kloia.student.StudentApplication=org.springframework.stereotype.Component,org.springframework.boot.SpringBootConfiguration
+com.kloia.student.controller.StudentController=org.springframework.stereotype.Component
+com.kloia.student.exception.CustomExceptionHandler=org.springframework.stereotype.Component
