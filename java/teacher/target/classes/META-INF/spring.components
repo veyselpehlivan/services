@@ -1,0 +1,9 @@
+#
+#Fri Dec 24 13:17:48 UTC 2021
+com.kloia.teacher.TeacherApplication=org.springframework.stereotype.Component,org.springframework.boot.SpringBootConfiguration
+com.kloia.teacher.exception.CustomExceptionHandler=org.springframework.stereotype.Component
+com.kloia.teacher.model.Teacher=javax.persistence.Entity,javax.persistence.Table
+com.kloia.teacher.converter.TeacherConverter=org.springframework.stereotype.Component
+com.kloia.teacher.service.TeacherService=org.springframework.stereotype.Component
+com.kloia.teacher.repository.TeacherRepository=org.springframework.stereotype.Component,org.springframework.data.repository.Repository
+com.kloia.teacher.controller.TeacherController=org.springframework.stereotype.Component
