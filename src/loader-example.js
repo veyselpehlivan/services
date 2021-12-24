@@ -3,11 +3,30 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require("node-fetch");
 const DataLoader = require("dataloader");
+const LaunchDarkly = require('launchdarkly-node-server-sdk');
+
+
+client = LaunchDarkly.init("api-8fc4fb85-ac1f-4645-94de-df414a79ec98");
+
+const classroomAddress = "http://localhost:8081/classroom";
+const studentAddress = "http://localhost:8080/student";
+const teacherAddress = "http://localhost:8082/teacher";
+
+client.once("ready", () => {
+    client.variation("eks-or-lambda", {"key": "user@test.com"}, false,
+      (err, showFeature) => {
+        if (showFeature) {
+          console.log("show feature is true");
+        } else {
+          console.log("show feature is false");
+        }
+      });
+  });
 
 const resolvers = {
     Query: {
         getStudent: () => {
-            return fetch(`http://localhost:8080/student`).then(function (response) {
+            return fetch(studentAddress).then(function (response) {
                 if (response.ok) {
                     return response.json()
                 } else {
@@ -17,7 +36,7 @@ const resolvers = {
         },
 
         getClassroom: () => {
-            return fetch(`http://localhost:8081/classroom`).then(function (response) {
+            return fetch(classroomAddress).then(function (response) {
                 if (response.ok) {
                     return response.json()
                 } else {
@@ -27,7 +46,7 @@ const resolvers = {
         },
 
         getTeacher: () => {
-              return fetch(`http://localhost:8082/teacher`).then(function (response) {
+              return fetch(classroomAddress).then(function (response) {
                   if (response.ok) {
                       return response.json()
                   } else {
@@ -39,7 +58,7 @@ const resolvers = {
         getStudentById: (parent, args) => {
             const { id } = args
 
-            return fetch(`http://localhost:8080/student/${id}`).then(function (response) {
+            return fetch(studentAddress +`/${id}`).then(function (response) {
                 if (response.ok) {
                     return response.json();
                 } else {
@@ -51,7 +70,7 @@ const resolvers = {
         getClassroomById: (parent, args) => {
             const { id } = args
 
-            return fetch(`http://localhost:8081/classroom/${id}`).then(function (response) {
+            return fetch(classroomAddress + `/${id}`).then(function (response) {
                 if (response.ok) {
                     return response.json();
                 } else {
@@ -63,7 +82,7 @@ const resolvers = {
         getTeacherById: (parent, args) => {
             const { id } = args
 
-            return fetch(`http://localhost:8082/teacher/${id}`).then(function (response) {
+            return fetch(teacherAddress +  `/${id}`).then(function (response) {
                 if (response.ok) {
                     return response.json();
                 } else {
@@ -76,7 +95,7 @@ const resolvers = {
             const dto = {
                 ids: args.ids
             }
-            return fetch(`http://localhost:8081/classroom/find-by-ids`,
+            return fetch(classroomAddress + `/find-by-ids`,
                 { method: 'POST', body: JSON.stringify(dto), headers: { 'Content-Type': 'application/json' } }
             ).then(res => res.json())
         },
@@ -85,7 +104,7 @@ const resolvers = {
             const dto = {
                 ids: args.ids
             }
-            return fetch(`http://localhost:8082/teacher/find-by-ids`,
+            return fetch(teacherAddress + `/find-by-ids`,
                 { method: 'POST', body: JSON.stringify(dto), headers: { 'Content-Type': 'application/json' } }
             ).then(res => res.json())
         },
@@ -126,14 +145,14 @@ const resolvers = {
                 classroomId: args.classroomId
             }
 
-            return fetch(`http://localhost:8080/student`, {
+            return fetch(studentAddress, {
                 method: 'POST', body: JSON.stringify(student), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
 
         updateStudent: (parent, args) => {
             let id = args.id
-            return fetch(`http://localhost:8080/student/${id}`, {
+            return fetch(studentAddress + `/${id}`, {
                 method: 'PUT', body: JSON.stringify(args), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
@@ -146,14 +165,14 @@ const resolvers = {
                 teacherId: args.teacherId
             }
 
-            return fetch(`http://localhost:8081/classroom`, {
+            return fetch(classroomAddress, {
                 method: 'POST', body: JSON.stringify(classroom), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
 
         updateClassroom: (parent, args) => {
             let id = args.id
-            return fetch(`http://localhost:8081/classroom/${id}`, {
+            return fetch(classroomAddress + `/${id}`, {
                 method: 'PUT', body: JSON.stringify(args), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
@@ -165,7 +184,7 @@ const resolvers = {
                 lastName: args.lastName
             }
 
-            return fetch(`http://localhost:8082/teacher`, {
+            return fetch(teacherAddress, {
                 method: 'POST', body: JSON.stringify(teacher), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
@@ -173,24 +192,24 @@ const resolvers = {
         updateTeacher: (parent, args) => {
             let id = args.id
             console.log(id)
-            return fetch(`http://localhost:8082/teacher/${id}`, {
+            return fetch(teacherAddress + `/${id}`, {
                 method: 'PUT', body: JSON.stringify(args), headers: { 'Content-Type': 'application/json' }
             }).then(res => res.json())
         },
 
         deleteStudent: (parent, args) => {
             const { id } = args
-            return fetch(`http://localhost:8080/student/${id}`, { method: 'DELETE' }).then(res => res.json())
+            return fetch(studentAddress +`/${id}`, { method: 'DELETE' }).then(res => res.json())
         },
 
         deleteClassroom: (parent, args) => {
             const { id } = args
-            return fetch(`http://localhost:8081/classroom/${id}`, { method: 'DELETE' }).then(res => res.json())
+            return fetch(classroomAddress + `/${id}`, { method: 'DELETE' }).then(res => res.json())
         },
 
         deleteTeacher: (parent, args) => {
             const { id } = args
-            return fetch(`http://localhost:8082/teacher/${id}`, { method: 'DELETE' }).then(res => res.json())
+            return fetch(teacherAddress + `/${id}`, { method: 'DELETE' }).then(res => res.json())
         },
     },
 };
@@ -200,7 +219,7 @@ const loaderStudent = {
         const dto = {
             ids: ids
         }
-        const rows = await fetch(`http://localhost:8081/classroom/find-by-ids`,
+        const rows = await fetch(classroomAddress+`/find-by-ids`,
             { method: 'POST', body: JSON.stringify(dto), headers: { 'Content-Type': 'application/json' } }
         ).then(res => res.json())
 
@@ -220,7 +239,7 @@ const loaderClassroom = {
         const dto = {
             ids: ids
         }
-        const rows = await fetch(`http://localhost:8082/teacher/find-by-ids`,
+        const rows = await fetch(teacherAddress+`/find-by-ids`,
             { method: 'POST', body: JSON.stringify(dto), headers: { 'Content-Type': 'application/json' } }
         ).then(res => res.json())
 
@@ -240,7 +259,7 @@ const loaderTeacher = {
         const dto = {
             ids: ids
         }
-        const rows = await fetch(`http://localhost:8081/classroom/find-by-ids`,
+        const rows = await fetch(classroomAddress+`/find-by-ids`,
             { method: 'POST', body: JSON.stringify(dto), headers: { 'Content-Type': 'application/json' } }
         ).then(res => res.json())
 
