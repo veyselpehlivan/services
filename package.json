@@ -12,6 +12,8 @@
   "dependencies": {
     "apollo-server": "^2.19.0",
     "dataloader": "^2.0.0",
+    "launchdarkly-js-client-sdk": "^2.20.0",
+    "launchdarkly-node-server-sdk": "^6.2.1",
     "node-fetch": "^2.6.1"
   }
 }
